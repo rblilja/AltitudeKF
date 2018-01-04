@@ -22,9 +22,9 @@ void Altitude_KF::propagate(float acceleration, const float dt) {
 	// State-space system model 'x_k = A*x_k-1 + B*u_k is given by:
 	//
 	//	x_k = [ h_k ] = [ 1 dT ] * [ h_k-1 ] + [ 1/2*dT^2 ] * u_k
-  //  		  [ v_k ]   [ 0  1 ]   [ v_k-1 ]   [ dT       ]
+  	//  	      [ v_k ]   [ 0  1 ]   [ v_k-1 ]   [ dT       ]
 	//
-	//						A						B
+	//			   A			     B
 	//
 	// where 'u_k' is our acceleration input signal.
 
@@ -35,7 +35,7 @@ void Altitude_KF::propagate(float acceleration, const float dt) {
 	// The "a priori" state estimate error covariance 'P_k|k-1 = A * P_k-1 * A' + Q_k' is calculated as follows:
 	//
 	// P_k|k-1 = [ 1 dT ] * P_k-1 * [  1 0 ] + Q_k
-	//			 [ 0  1 ]			[ dT 1 ]
+	//	     [ 0  1 ]	        [ dT 1 ]
 
 	// The process noise covariance matrix 'Q' is a bit trickier to derive, but consider some additive noise 'w_k' perturbing the
 	// true acceleration 'a_k', thus the input signal is 'u_k = a_k + w_k'. The affect of 'w_k' on the state estimate is by linearity
@@ -44,7 +44,7 @@ void Altitude_KF::propagate(float acceleration, const float dt) {
 	// Then, by definition* 'Q' equals 'G * G' * σ^2', which in our case translates into:
 	//
 	// Q_k = G_k * G'_k * σ_accelerometer^2 = [(dT^4)/4 (dT^3)/2] * σ_accelerometer^2
-	//										  [(dT^3)/2     dT^2]
+	//					  [(dT^3)/2     dT^2]
 	//
 	// * I only get half of the math showing 'Q = G * G' * σ^2', so I hide myself behind 'by definition'.
 
@@ -64,7 +64,7 @@ void Altitude_KF::update(float altitude, float R_altitude) {
 	// Observation vector 'zhat' from the current state estimate:
 	//
 	// zhat_k = [ 1 0 ] * [ h_k ]
-	//                 	  [ v_k ]
+	//                    [ v_k ]
 	//             H
 
 	// 'H' is constant, so its time instance I'm using below is a bit ambitious.
@@ -100,7 +100,7 @@ void Altitude_KF::update(float altitude, float R_altitude) {
 	//                    ( [ 0 1 ]   [ K_1 ]           )   [ -K_1    1  ]
 	//
 	//  P_k|k = (I - K_k * H_k) * P_k+1|k = [ (1-K_0) 0 ] * [ P_00 P_01 ] = [ (1-K_0)*P_00       (1-K_0)*P_01       ]
-	//										[ -K_1    1 ]   [ P_10 P_11 ]   [ (-K_1*P_00 + P_10) (-K_1*P_01 + P_11) ]
+	//					[ -K_1    1 ]   [ P_10 P_11 ]   [ (-K_1*P_00 + P_10) (-K_1*P_01 + P_11) ]
 
 	// Calculate the state estimate covariance
 	P[0][0] = P[0][0] - K[0] * P[0][0];
